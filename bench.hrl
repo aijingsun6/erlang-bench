@@ -1,15 +1,15 @@
 %% @doc bench with single thread
 bench(Name, Fun, Trials) ->
-  print_result(Name, repeat_tc(Fun, Trials)).
+  print_result(Name, repeat_tc(Fun, Trials, 1)).
 
 %% @doc bench with multi thread
 bench(Name, Fun, Trials, Threads) ->
   print_result(Name, repeat_tc(Fun, Trials, Threads)).
 
-repeat_tc(Fun, Trials) ->
+repeat_tc(Fun, Trials, Threads) when Threads < 2 ->
+  % only one thread
   {Time, _} = timer:tc(fun() -> repeat(Trials, Fun) end),
-  {Time, Trials}.
-
+  {Time, Trials};
 repeat_tc(Fun, Trials, Threads) ->
   {Time, _} = timer:tc(
     fun() ->
@@ -29,7 +29,7 @@ print_result(_, _) ->
 
 do_map(0, _PID, _F, _Trials) -> ok;
 do_map(N, PID, F, Trials) ->
-  erlang:spawn(fun() -> repeat_tc(F, Trials), PID ! ok end),
+  erlang:spawn(fun() -> repeat_tc(F, Trials, 1), PID ! ok end),
   do_map(N - 1, PID, F, Trials).
 
 do_reduce(0) -> ok;
