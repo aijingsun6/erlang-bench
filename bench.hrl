@@ -1,6 +1,6 @@
 %% @doc bench with single thread
 bench(Name, Fun, Trials) ->
-  print_result(Name, repeat_tc(Fun, Trials, 1)).
+  bench(Name, Fun, Trials, 1).
 
 %% @doc bench with multi thread
 bench(Name, Fun, Trials, Threads) ->
